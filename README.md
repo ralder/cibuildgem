@@ -48,6 +48,12 @@ target. When distributing separate Linux builds, use distinct `-linux-gnu`
 and `-linux-musl` gem platforms. See
 [rake-compiler-dock's Linux platform guidance](https://github.com/rake-compiler/rake-compiler-dock#linux-gnu-and-musl-important-details).
 
+Set `package-command` when a build must run in a separate environment, such as
+an Alpine container on a Linux GitHub runner. The command must create its gems
+in `pkg/` under `working-directory`. With `setup-rake-compiler: 'false'`, the
+command is responsible for configuring Rake Compiler in its build environment
+and for passing packaging options such as `--include-single-abi`.
+
 ### Build artifact names
 
 The action names build artifacts `stage-<runner OS>-<runner architecture>` by

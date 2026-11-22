@@ -13,6 +13,9 @@ inputs:
     description: "Download target Rubies and configure Rake Compiler. Set to false to use a preconfigured ~/.rake-compiler/config.yml."
     required: false
     default: "true"
+  package-command:
+    description: "Command that packages gems into pkg/. Use this to run the build in a separate environment."
+    required: false
   artifact-name:
     description: "Name of the build artifact. Use the same name for compile, test_cross, and install. Defaults to stage-<runner OS>-<runner architecture>."
     required: false
@@ -56,7 +59,7 @@ runs:
           const { run } = await import(url.href)
           await run(process.env.WORKING_DIRECTORY)
     - name: "Check existing Rake Compiler configuration"
-      if: "${{ inputs.step == 'compile' && inputs.setup-rake-compiler == 'false' }}"
+      if: "${{ inputs.step == 'compile' && inputs.setup-rake-compiler == 'false' && inputs.package-command == '' }}"
       shell: bash
       run: |
         if [ ! -s "$HOME/.rake-compiler/config.yml" ]; then
@@ -69,8 +72,15 @@ runs:
       shell: bash
       env:
         INCLUDE_SINGLE_ABI: "${{ inputs.include-single-abi }}"
+        PACKAGE_COMMAND: ${{ inputs.package-command }}
       run: |
-        if [ "$INCLUDE_SINGLE_ABI" = "true" ]; then cibuildgem package --include-single-abi; else cibuildgem package; fi
+        if [ -n "$PACKAGE_COMMAND" ]; then
+          bash -eo pipefail -c "$PACKAGE_COMMAND"
+        elif [ "$INCLUDE_SINGLE_ABI" = "true" ]; then
+          cibuildgem package --include-single-abi
+        else
+          cibuildgem package
+        fi
     - name: Upload artifacts
       if: "${{ inputs.step == 'compile' }}"
       uses: actions/upload-artifact@v4
