@@ -7,41 +7,44 @@ jobs:
   lint:
     timeout-minutes: 5
     name: "Ruby linter"
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
     steps:
       - name: "Checkout code"
         uses: "actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3"
       - name: "Setup ruby"
-        uses: "ruby/setup-ruby@8aeb6ff8030dd539317f8e1769a044873b56ea71"
+        uses: "ruby/setup-ruby@be3c7df29b3349ec6bcfc6b4792f1cf9f5237d18" # v1.343.0
         with:
+          ruby-version: "3.4"
           bundler-cache: true
       - name: "Run rubocop"
         run: "bundle exec rubocop"
   test:
     timeout-minutes: 10
     name: "Testing the gem"
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
     steps:
       - name: "Checkout code"
         uses: "actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3"
       - name: "Remove the Gemfile.lock"
         run: "rm -rf Gemfile.lock"
       - name: "Setup ruby"
-        uses: "ruby/setup-ruby@8aeb6ff8030dd539317f8e1769a044873b56ea71"
+        uses: "ruby/setup-ruby@be3c7df29b3349ec6bcfc6b4792f1cf9f5237d18" # v1.343.0
         with:
+          ruby-version: "3.4"
           bundler-cache: true
       - name: "Run the test suite"
         run: "bundle exec rake test"
   gem_deps:
     timeout-minutes: 10
     name: "Ensure CLI is compatible no matter the gem dependencies"
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
     steps:
       - name: "Checkout code"
         uses: "actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3"
       - name: "Setup ruby"
-        uses: "ruby/setup-ruby@8aeb6ff8030dd539317f8e1769a044873b56ea71"
+        uses: "ruby/setup-ruby@be3c7df29b3349ec6bcfc6b4792f1cf9f5237d18" # v1.343.0
         with:
+          ruby-version: "3.4"
           bundler-cache: true
       - name: "Install the gem"
         run: "rake install"
